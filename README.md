@@ -1,6 +1,10 @@
 # KDEformer: Accelerating Transformers via Kernel Density Estimation
-## How the algorithm works 
+
 **KDEformer** can approximate the attention in sub-quadratic time with provable spectral norm bounds. On BigGAN image generation, we achieve better generative scores than the exact computation with over $4\times$ speedup. For ImageNet classification with T2T-ViT, KDEformer shows over $18\times$ speedup while the accuracy drop is less than $0.5\%$.
+
+[ADD BIGGAN RESULT IMAGES HERE]
+
+## How the algorithm works 
 
 Also, along with the theory, we designed a practical method suitable for it, which works well in practice on the mentioned datasets. The big picture technique used has a very simple structure. First, by using LSH, it samples the elements that have the greatest impact on the final output, which is a sparse estimator. Also, among the rest of the elements, we will sample randomly, so that we will have an unbiased estimator that works perfectly empirically.
 
