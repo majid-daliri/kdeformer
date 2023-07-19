@@ -2,19 +2,28 @@
 
 **KDEformer** can approximate the attention in sub-quadratic time with provable spectral norm bounds. On BigGAN image generation, we achieve better generative scores than the exact computation with over $4\times$ speedup. For ImageNet classification with T2T-ViT, KDEformer shows over $18\times$ speedup while the accuracy drop is less than $0.5\%$.
 
-[ADD BIGGAN RESULT IMAGES HERE]
+![fig_biggan_image_generation_10](https://github.com/majid-daliri/kdeformer/assets/112280828/8835c59b-0473-4f41-a637-aeae396dc883)
 
 ## How the algorithm works 
 
-Also, along with the theory, we designed a practical method suitable for it, which works well in practice on the mentioned datasets. The big picture technique used has a very simple structure. First, by using LSH, it samples the elements that have the greatest impact on the final output, which is a sparse estimator. Also, among the rest of the elements, we will sample randomly, so that we will have an unbiased estimator that works perfectly empirically.
+The KDEformer leverages the body of research on efficient Kernel Density Estimation (KDE). In the KDE problem, we aim to compute the kernel density for an arbitrary query point, `q`. This needs to be estimated to a relative error in a time complexity proportional to `d` divided by a lower bound on the kernel density, `$µ_X(q)$`.
+Our technique transforms the problem of finding the sampling matrix and diagonal scaling that satisfy the attention approximation into a generalization of the KDE problem.
 
-Also, we use a new special LSH in this paper which works on GPU and its description is given in detail in the paper. But in order to have a general intuition of how it works, we will give a general description of it. First, it partitions the entire space using LSH cosine. Therefore, we will have several buckets with various sizes, most of which are generally small in size.
+We use an efficient KDE procedure for estimating the exponential kernel density to compute a scaling that satisfies the spectral guarantee of the attention approximation. We also design an efficient sampling matrix that satisfies the approximation with a small number of rows. The sampling probabilities need to be proportional to the column norms of the softmax matrix.
 
+Having a generalized KDE procedure for efficiently evaluating the weighted exponential kernel density enables us to approximate the attention mechanism as per our approximation formula. This approach translates the original problem into a Gaussian KDE problem, which allows us to leverage the significant recent progress in this area.
+
+In this paper, we present a novel Locality-Sensitive Hashing (LSH) algorithm tailored for GPU usage, with a comprehensive explanation included within the main body of the text. To provide an overview of its operation, the algorithm initially segregates the entire space utilizing cosine LSH. This leads to the creation of numerous buckets of diverse sizes, the majority of which are typically on the smaller end of the spectrum.
+
+<p align="center">
 <img width="436" alt="Screen Shot 1401-11-13 at 14 30 31" src="https://user-images.githubusercontent.com/112280828/216431091-3b69481b-14c3-4909-acec-26503ee142f0.png">
+</p>
 
-Then that algorithm sorts all buckets based on Hamming distance in such a way that both adjacent elements have hashing with Hamming distance less than one. In this way, two elements are placed next to each other if they are very similar to each other. After sorting, we divide the elements into different blocks and multiply the diagonal blocks as a separate family.
+Following this, the algorithm arranges all the buckets in an order dictated by their Hamming distance, ensuring that neighboring elements have a Hamming distance of less than one. This arrangement ensures that elements bearing strong similarities are positioned adjacent to each other. Post-sorting, the elements are distributed across several blocks. Diagonal blocks are then isolated and multiplied as separate units.
 
+<p align="center">
 <img width="436" alt="Screen Shot 1401-11-13 at 14 30 50" src="https://user-images.githubusercontent.com/112280828/216432181-c6e52de9-59ce-4e7a-9e68-221a0a82b670.png">
+</p>
 
 -----
 ## Experiments
