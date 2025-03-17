@@ -28,9 +28,12 @@ Following this, the algorithm arranges all the buckets in an order dictated by t
 -----
 ## Experiments
 
-- The codes include two experiments; (1) attention approximation on GloVe dataset and (2) BigGAN image geneartion.
+- The codes include three experiments; (1) attention approximation on GloVe dataset, (2) BigGAN image geneartion and (3) ImageNet classification
 - The proposed algorithm is implemented in ``KDEformer.py``.
 - For running ScatterBrain, install the pacakge from https://github.com/HazyResearch/fly.
+
+### 1. Attention Approximation on GloVe Dataset
+
 - For GloVe experiment, download and preparse dataset:
 ```bash
 wget https://nlp.stanford.edu/data/glove.twitter.27B.zip
@@ -40,11 +43,32 @@ and run
 ```bash
 python demo_glove.py
 ```
+
+### 2. Image Generation with BigGAN
+
 - For BigGAN image generation, run 
 ```bash
 python demo_biggan.py --attention METHOD
 ```
 where METHOD can be one of ``exact`` (default), ``kdeformer``, ``performer``, ``reformer``, ``sblocal``. If ScatterBrain is not installed, the option with ``sblocal`` would not run.
+
+### 3. ImageNet Classification with T2T-ViT model
+
+For ImageNet experiment, first download imagenet validation dataset: https://www.image-net.org/download.php. We will have to login and submit term of access. The total size would be 6.3 GB. Then, set the variable ``DATASETPATH`` in demo_imagenet.py file with your path.
+
+Second download the pretrained T2T-ViT model from the [T2T-ViT repo](https://github.com/yitu-opensource/T2T-ViT/releases). We choose ``82.6_T2T_ViTt_24`` model which can be downloaded by
+
+```sh
+wget https://github.com/yitu-opensource/T2T-ViT/releases/download/main/82.6_T2T_ViTt_24.pth.tar
+```
+and set the variable ``MODELPATH`` in demo_imagenet.py file with your path.
+
+To run the code with the exact attention,
+```python
+python demo_imagenet.py --attn_method kdeformer --num_samples1 98
+```
+The exact attention can be tested by replacing argument with ``--attn_method full``.
+
 
 -----
 
